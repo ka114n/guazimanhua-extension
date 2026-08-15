@@ -26,6 +26,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--source-info", help="Path to keiyoushi-source-info.json from the build")
     ap.add_argument("--apk", help="Override the apk path in the index (relative to repo root)")
+    ap.add_argument("--store", action="store_true", help="Also write index-store.json (new Mihon store format)")
     ap.add_argument("--out", default=None, help="Output dir (default: repo root)")
     args = ap.parse_args()
 
@@ -71,6 +72,49 @@ def main() -> None:
     extensions = index_pb2.Extensions()
     json_format.Parse(json.dumps({"extensions": [entry]}, ensure_ascii=False), extensions)
     (out / "index.pb").write_bytes(extensions.SerializeToString())
+
+    if args.store:
+        store_base = meta["store_base_url"]
+        store = {
+            "name": meta["name"],
+            "badgeLabel": meta["name"],
+            "signingKey": meta["signing_key_fingerprint"],
+            "contact": {
+                "website": meta["website_url"],
+                "discord": None,
+            },
+            "extensionList": {
+                "extensions": [
+                    {
+                        "name": meta["name"],
+                        "packageName": meta["pkg"],
+                        "resources": {
+                            "apkUrl": f"{store_base}/{meta['apk']}",
+                            "iconUrl": meta["icon_url"],
+                        },
+                        "extensionLib": meta.get("extension_lib", "1.5"),
+                        "versionCode": meta["code"],
+                        "versionName": meta["version"],
+                        "contentWarning": meta.get("content_warning", "CONTENT_WARNING_SAFE"),
+                        "sources": [
+                            {
+                                "id": int(meta["source_id"]),
+                                "name": meta["name"],
+                                "language": meta["lang"],
+                                "homeUrl": meta["base_url"],
+                                "mirrorUrls": [],
+                                "message": None,
+                            }
+                        ],
+                    }
+                ]
+            },
+        }
+        (out / "index-store.json").write_text(
+            json.dumps(store, ensure_ascii=False, separators=(",", ":")),
+            encoding="utf-8",
+        )
+        print("Wrote index-store.json in", out)
 
     print("Wrote index.min.json and index.pb in", out)
 

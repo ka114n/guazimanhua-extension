@@ -59,7 +59,7 @@ jobs:
           cp "$APK" apk/"$BASE"
           python tools/build_index.py \
             --source-info "source/src/zh/guazimanhua/build/keiyoushi-source-info.json" \
-            --apk "apk/$BASE"
+            --apk "apk/$BASE" --store
 
       - name: Commit updated dist
         working-directory: .
@@ -68,7 +68,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f index.min.json index.pb apk/
+          git add -f index.min.json index.pb index-store.json apk/
           if git diff --cached --quiet; then
             echo "no changes"
           else
