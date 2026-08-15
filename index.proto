@@ -1,0 +1,38 @@
+syntax = "proto3";
+package tachiyomi;
+
+message Extensions {
+  repeated Extension extensions = 1;
+}
+
+message Extension {
+  string name = 1;
+  string pkg = 2;
+  string apk = 3;
+  string lang = 4;
+  int32 code = 5;
+  string version = 6;
+  int32 nsfw = 7;
+  bool hasReadme = 8;
+  bool hasChangelog = 9;
+  repeated Source sources = 10;
+}
+
+message Source {
+  string name = 1;
+  string lang = 2;
+  int64 id = 3;
+  string baseUrl = 4;
+  int32 versionId = 5;
+  int32 nsfw = 6;
+  string app = 7;
+  int32 type = 8;
+  string pkg = 9;
+  string version = 10;
+  bool hasReadme = 11;
+  bool hasChangelog = 12;
+  string iconUrl = 13;
+  string minMihonVersion = 14;
+  string maxMihonVersion = 15;
+  string signingKeyFingerprint = 16;
+}
