@@ -35,11 +35,19 @@ jobs:
             build-tools;36.0.0
 
       - name: Build release APK
+        run: ./gradlew --no-daemon :src:zh:guazimanhua:assembleRelease
+
+      - name: Sign APK
         env:
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           ALIAS: ${{ secrets.ALIAS }}
-        run: ./gradlew --no-daemon :src:zh:guazimanhua:assembleRelease
+        run: |
+          APK=$(ls src/zh/guazimanhua/build/outputs/apk/release/*.apk)
+          STORE_PASS="${KEY_STORE_PASSWORD:-guazi123}"
+          KEY_PASS="${KEY_PASSWORD:-guazi123}"
+          ALIAS_NAME="${ALIAS:-guazi}"
+          jarsigner -keystore signingkey.jks -storepass "$STORE_PASS" -keypass "$KEY_PASS" "$APK" "$ALIAS_NAME"
 
       - name: Regenerate repo index
         working-directory: .

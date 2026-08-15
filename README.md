@@ -5,7 +5,8 @@
 ## 目录结构
 
 - `index.min.json` / `index.pb` — 扩源索引,Mihon 从这里发现并下载扩展
-- `apk/` — 编译好的扩展 APK(已用仓库内的 keystore 签名)
+- `repo.json` — 仓库元数据 + 签名指纹,Mihon 用它校验并自动信任扩展(必填)
+- `apk/` — 编译并签名好的扩展 APK(签名密钥见 `source/signingkey.jks`,密码 `guazi123`,alias `guazi`)
 - `source/` — 基于 [keiyoushi/extensions-source](https://github.com/keiyoushi/extensions-source) 的 Gradle 源码,仅保留 `guazimanhua` 这一个源
 - `source/index.proto` — 索引的 protobuf 定义
 - `tools/` — 生成 `index.*` 的脚本与元数据
@@ -28,7 +29,9 @@ https://raw.githubusercontent.com/<用户名>/guazimanhua-extension/main/index.m
 
 ## CI 自动构建
 
-`source/.github/workflows/build.yml`:push 到 `main` 且改动 `source/**` 时触发,结束后自动把 `index.min.json`、`index.pb` 和签名后的 APK 提交回仓库。签名密码请配置为 GitHub Secrets:`KEY_STORE_PASSWORD`、`KEY_PASSWORD`、`ALIAS`(不配置则用源码中签名的默认值)。
+`source/.github/workflows/build.yml`:push 到 `main` 且改动 `source/**` 时触发。流程:gradle 出包 → `jarsigner` 签名 → 用 `keiyoushi-source-info.json` 重新生成 `index.*` 与 `apk/` → 提交回仓库。
+
+签名凭据默认 `guazi123` / alias `guazi`(仓库内 keystore);如配置 GitHub Secrets(`KEY_STORE_PASSWORD`、`KEY_PASSWORD`、`ALIAS`)则优先使用,便于日后换密钥。
 
 ## 本地构建前置
 
