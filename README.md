@@ -1,4 +1,4 @@
-# 瓜子漫画 Mihon 扩展仓库
+﻿# 瓜子漫画 Mihon 扩展仓库
 
 自建的 Mihon / Tachiyomi 第三方扩展源,提供「瓜子漫画」(guazimanhua)数据源。
 
@@ -29,7 +29,7 @@ https://raw.githubusercontent.com/<用户名>/guazimanhua-extension/main/index.m
 
 ## CI 自动构建
 
-`source/.github/workflows/build.yml`:push 到 `main` 且改动 `source/**` 时触发。流程:gradle 出包 → `jarsigner` 签名 → 用 `keiyoushi-source-info.json` 重新生成 `index.*` 与 `apk/` → 提交回仓库。
+`source/.github/workflows/build.yml`:push 到 `main` 且改动 `source/**` 时触发。流程:gradle 出包 → `apksigner` 签名 → 用 `keiyoushi-source-info.json` 重新生成 `index.*` 与 `apk/` → 提交回仓库。
 
 签名凭据默认 `guazi123` / alias `guazi`(仓库内 keystore);如配置 GitHub Secrets(`KEY_STORE_PASSWORD`、`KEY_PASSWORD`、`ALIAS`)则优先使用,便于日后换密钥。
 

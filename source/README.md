@@ -1,4 +1,4 @@
-# 瓜子漫画扩展源码
+﻿# 瓜子漫画扩展源码
 
 基于 [keiyoushi/extensions-source](https://github.com/keiyoushi/extensions-source) 裁剪,只保留 `guazimanhua` 一个源。
 
@@ -12,7 +12,7 @@
 sdk.dir=C\:\\Android\\Sdk
 ```
 
-签名:release 包由仓库内 `signingkey.jks` 签名(密码 `guazi123`,alias `guazi`)。本地/CI 中签名用 `jarsigner` 手动执行(见 `.github/workflows/build.yml`);推公开仓库前请换成自己的 keystore,并把密码放进 GitHub Secrets(`KEY_STORE_PASSWORD` / `KEY_PASSWORD` / `ALIAS`,未配置时默认用 `guazi123` / `guazi`)。
+签名:release 包由仓库内 `signingkey.jks` 签名(密码 `guazi123`,alias `guazi`)。本地/CI 中签名用 `apksigner` 手动执行(见 `.github/workflows/build.yml`);推公开仓库前请换成自己的 keystore,并把密码放进 GitHub Secrets(`KEY_STORE_PASSWORD` / `KEY_PASSWORD` / `ALIAS`,未配置时默认用 `guazi123` / `guazi`)。
 
 构建:
 

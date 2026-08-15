@@ -47,7 +47,9 @@ jobs:
           STORE_PASS="${KEY_STORE_PASSWORD:-guazi123}"
           KEY_PASS="${KEY_PASSWORD:-guazi123}"
           ALIAS_NAME="${ALIAS:-guazi}"
-          jarsigner -keystore signingkey.jks -storepass "$STORE_PASS" -keypass "$KEY_PASS" "$APK" "$ALIAS_NAME"
+          APKSIGNER="$ANDROID_HOME/build-tools/36.0.0/apksigner"
+          "$APKSIGNER" sign --ks signingkey.jks --ks-pass "pass:$STORE_PASS" \
+            --key-pass "pass:$KEY_PASS" --ks-key-alias "$ALIAS_NAME" "$APK"
 
       - name: Regenerate repo index
         working-directory: .
