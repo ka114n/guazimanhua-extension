@@ -13,10 +13,10 @@
 
 ## 在 Mihon 中添加扩展源
 
-Mihon → 设置 → 浏览 → 扩展仓库 → 输入 URL(把 `<用户名>` 换成你的 GitHub 用户名):
+Mihon → 设置 → 浏览 → 扩展仓库 → 输入 URL
 
 ```
-https://raw.githubusercontent.com/<用户名>/guazimanhua-extension/main/index.min.json
+https://raw.githubusercontent.com/ka114n/guazimanhua-extension/main/index.min.json
 ```
 
 然后在「浏览 → 扩展」里刷新仓库列表,安装「瓜子漫画」。
