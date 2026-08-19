@@ -64,6 +64,9 @@ abstract class Copy3000 : HttpSource() {
                 }
             }
         }
+        if (mangas.isEmpty() && !body.contains("exemptComic-box")) {
+            throw Exception("无法解析列表页：服务器未返回内容（可能拒绝了当前请求，请检查全局 UA 设置）")
+        }
         return MangasPage(mangas, mangas.size >= 50)
     }
 
@@ -84,7 +87,10 @@ abstract class Copy3000 : HttpSource() {
             .addQueryParameter("q", query)
             .addQueryParameter("q_type", qType)
             .build()
-        return GET(url, headers)
+        val searchHeaders = headers.newBuilder()
+            .set("Accept", "application/json, text/plain, */*")
+            .build()
+        return GET(url, searchHeaders)
     }
 
     override fun searchMangaParse(response: Response): MangasPage {
@@ -179,11 +185,23 @@ abstract class Copy3000 : HttpSource() {
 
     override fun chapterListRequest(manga: SManga): Request {
         val slug = manga.url.trimEnd('/').substringAfterLast('/')
+        // The endpoint is a DRF (Django REST framework) view; with `Accept:
+        // text/html` it serves its browsable HTML page instead of JSON, which
+        // breaks parsing. Force JSON content negotiation.
+        val headers = headers.newBuilder()
+            .set("Accept", "application/json, text/plain, */*")
+            .build()
         return GET("$baseUrl/comicdetail/$slug/chapters", headers)
     }
 
     override fun chapterListParse(response: Response): List<SChapter> {
-        val json = JSONObject(response.body.string())
+        // The DRF view may still serve its browsable HTML page (e.g. when a
+        // global interceptor re-adds `Accept: text/html`); surface it clearly.
+        val body = response.body.string()
+        if (!body.trimStart().startsWith("{")) {
+            throw Exception("章节接口返回了 HTML 而非 JSON，请检查全局请求头设置")
+        }
+        val json = JSONObject(body)
         val results = json.getString("results")
         val plain = decryptHex(results.substring(16), aesKey.toByteArray(Charsets.UTF_8), results.substring(0, 16))
         val data = JSONObject(plain).getJSONObject("groups").optJSONObject("default") ?: JSONObject()
