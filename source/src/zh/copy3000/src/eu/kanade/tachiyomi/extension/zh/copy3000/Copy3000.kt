@@ -15,6 +15,7 @@ import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONObject
+import org.jsoup.Jsoup
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
@@ -45,14 +46,14 @@ abstract class Copy3000 : HttpSource() {
         return GET("$baseUrl/comics?ordering=-datetime_updated&offset=$offset&limit=50", headers)
     }
 
-    override fun popularMangaParse(response: Response): MangasPage = parseComicBoxPage(response)
+    override fun popularMangaParse(response: Response): MangasPage = parseComicBoxPage(response.body.string())
 
     override fun latestUpdatesRequest(page: Int): Request = popularMangaRequest(page)
 
-    override fun latestUpdatesParse(response: Response): MangasPage = parseComicBoxPage(response)
+    override fun latestUpdatesParse(response: Response): MangasPage = parseComicBoxPage(response.body.string())
 
-    private fun parseComicBoxPage(response: Response): MangasPage {
-        val doc = response.asJsoup()
+    private fun parseComicBoxPage(body: String): MangasPage {
+        val doc = Jsoup.parse(body)
         val mangas = mutableListOf<SManga>()
         for (box in doc.select("div.exemptComic-box[list]")) {
             mangas += parseComicBriefs(box.attr("list")).map { brief ->
@@ -67,7 +68,9 @@ abstract class Copy3000 : HttpSource() {
     }
 
     override fun searchMangaRequest(page: Int, query: String, filters: FilterList): Request {
-        val offset = (page - 1) * 50
+        // The searchci API rejects limit > 30 and empty queries (HTTP 400).
+        if (query.isBlank()) return popularMangaRequest(page)
+        val offset = (page - 1) * 30
         val qType = filters.filterIsInstance<QueryTypeFilter>().firstOrNull()?.getValue() ?: "name"
         val url = baseUrl.toHttpUrl().newBuilder()
             .addPathSegment("api")
@@ -77,7 +80,7 @@ abstract class Copy3000 : HttpSource() {
             .addPathSegment("comics")
             .addQueryParameter("offset", offset.toString())
             .addQueryParameter("platform", "2")
-            .addQueryParameter("limit", "50")
+            .addQueryParameter("limit", "30")
             .addQueryParameter("q", query)
             .addQueryParameter("q_type", qType)
             .build()
@@ -85,7 +88,9 @@ abstract class Copy3000 : HttpSource() {
     }
 
     override fun searchMangaParse(response: Response): MangasPage {
-        val json = JSONObject(response.body.string())
+        val body = response.body.string()
+        if (!body.trimStart().startsWith("{")) return parseComicBoxPage(body)
+        val json = JSONObject(body)
         val results = json.optJSONObject("results")
         val list = results?.optJSONArray("list") ?: JSONArray()
         val mangas = List(list.length()) { i ->
