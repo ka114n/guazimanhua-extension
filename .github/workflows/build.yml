@@ -62,16 +62,15 @@ jobs:
         run: |
           python -m pip install --quiet grpcio grpcio-tools
           mkdir -p apk
-          for APK in source/src/zh/guazimanhua/build/outputs/apk/release/*.apk \
-                     source/src/zh/copy3000/build/outputs/apk/release/*.apk; do
-            BASE=$(basename "$APK")
-            cp "$APK" apk/"$BASE"
-          done
+          GUIZ=$(ls source/src/zh/guazimanhua/build/outputs/apk/release/*.apk | xargs -n1 basename)
+          CPY=$(ls source/src/zh/copy3000/build/outputs/apk/release/*.apk | xargs -n1 basename)
+          cp "source/src/zh/guazimanhua/build/outputs/apk/release/$GUIZ" "apk/$GUIZ"
+          cp "source/src/zh/copy3000/build/outputs/apk/release/$CPY" "apk/$CPY"
           python tools/build_index.py --store \
             --source-info source/src/zh/guazimanhua/build/keiyoushi-source-info.json \
             --source-info source/src/zh/copy3000/build/keiyoushi-source-info.json \
-            --apk apk/tachiyomi-zh.guazimanhua-v1.4.1.apk \
-            --apk apk/tachiyomi-zh.copy3000-v1.4.1.apk
+            --apk "apk/$GUIZ" \
+            --apk "apk/$CPY"
 
       - name: Commit updated dist
         working-directory: .
