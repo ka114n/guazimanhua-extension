@@ -35,6 +35,10 @@ jobs:
             build-tools;36.0.0
 
       - name: Build release APKs
+        env:
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD || 'guazi123' }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'guazi123' }}
+          ALIAS: ${{ secrets.ALIAS || 'guazi' }}
         run: ./gradlew --no-daemon :src:zh:guazimanhua:assembleRelease :src:zh:copy3000:assembleRelease
 
       - name: Sign APKs
