@@ -34,34 +34,40 @@ jobs:
             platforms;android-36
             build-tools;36.0.0
 
-      - name: Build release APK
-        run: ./gradlew --no-daemon :src:zh:guazimanhua:assembleRelease
+      - name: Build release APKs
+        run: ./gradlew --no-daemon :src:zh:guazimanhua:assembleRelease :src:zh:copy3000:assembleRelease
 
-      - name: Sign APK
+      - name: Sign APKs
         env:
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           ALIAS: ${{ secrets.ALIAS }}
         run: |
-          APK=$(ls src/zh/guazimanhua/build/outputs/apk/release/*.apk)
           STORE_PASS="${KEY_STORE_PASSWORD:-guazi123}"
           KEY_PASS="${KEY_PASSWORD:-guazi123}"
           ALIAS_NAME="${ALIAS:-guazi}"
           APKSIGNER="$ANDROID_HOME/build-tools/36.0.0/apksigner"
-          "$APKSIGNER" sign --ks signingkey.jks --ks-pass "pass:$STORE_PASS" \
-            --key-pass "pass:$KEY_PASS" --ks-key-alias "$ALIAS_NAME" "$APK"
+          for APK in src/zh/guazimanhua/build/outputs/apk/release/*.apk \
+                     src/zh/copy3000/build/outputs/apk/release/*.apk; do
+            "$APKSIGNER" sign --ks signingkey.jks --ks-pass "pass:$STORE_PASS" \
+              --key-pass "pass:$KEY_PASS" --ks-key-alias "$ALIAS_NAME" "$APK"
+          done
 
       - name: Regenerate repo index
         working-directory: .
         run: |
           python -m pip install --quiet grpcio grpcio-tools
-          APK=$(ls source/src/zh/guazimanhua/build/outputs/apk/release/*.apk)
-          BASE=$(basename "$APK")
           mkdir -p apk
-          cp "$APK" apk/"$BASE"
-          python tools/build_index.py \
-            --source-info "source/src/zh/guazimanhua/build/keiyoushi-source-info.json" \
-            --apk "apk/$BASE" --store
+          for APK in source/src/zh/guazimanhua/build/outputs/apk/release/*.apk \
+                     source/src/zh/copy3000/build/outputs/apk/release/*.apk; do
+            BASE=$(basename "$APK")
+            cp "$APK" apk/"$BASE"
+          done
+          python tools/build_index.py --store \
+            --source-info source/src/zh/guazimanhua/build/keiyoushi-source-info.json \
+            --source-info source/src/zh/copy3000/build/keiyoushi-source-info.json \
+            --apk apk/tachiyomi-zh.guazimanhua-v1.4.1.apk \
+            --apk apk/tachiyomi-zh.copy3000-v1.4.1.apk
 
       - name: Commit updated dist
         working-directory: .
@@ -74,6 +80,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "no changes"
           else
-            git commit -m "dist: rebuild extension"
+            git commit -m "dist: rebuild extensions"
             git push
           fi
