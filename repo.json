@@ -1,8 +1,8 @@
 {
   "index_v2": "https://github.com/ka114n/guazimanhua-extension/raw/main/index-store.json",
   "meta": {
-    "name": "瓜子漫画+拷贝漫画",
-    "shortName": "瓜子+拷贝漫画",
+    "name": "瓜子漫画",
+    "shortName": "瓜子漫画",
     "website": "https://github.com/ka114n/guazimanhua-extension",
     "signingKeyFingerprint": "5c4ab39469302c2c9827bcbcf286d682ed58b6734409af0e33d85c5d7138b27f"
   }

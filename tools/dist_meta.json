@@ -1,7 +1,7 @@
 {
   "repo": {
-    "name": "鐡滃瓙婕敾+鎷疯礉婕敾",
-    "shortName": "鐡滃瓙+鎷疯礉婕敾",
+    "name": "瓜子漫画",
+    "shortName": "瓜子漫画",
     "store_base_url": "https://raw.githubusercontent.com/ka114n/guazimanhua-extension/main",
     "website_url": "https://github.com/ka114n/guazimanhua-extension",
     "signing_key_fingerprint": "5c4ab39469302c2c9827bcbcf286d682ed58b6734409af0e33d85c5d7138b27f",
@@ -9,7 +9,7 @@
   },
   "extensions": [
     {
-      "name": "鐡滃瓙婕敾",
+      "name": "瓜子漫画",
       "pkg": "eu.kanade.tachiyomi.extension.zh.guazimanhua",
       "apk": "apk/tachiyomi-zh.guazimanhua-v1.4.1.apk",
       "lang": "zh",
@@ -20,21 +20,6 @@
       "hasChangelog": false,
       "source_id": 9103931521355991619,
       "base_url": "https://www.guazimanhua.com",
-      "extension_lib": "1.5",
-      "content_warning": "CONTENT_WARNING_SAFE"
-    },
-    {
-      "name": "鎷疯礉婕敾",
-      "pkg": "eu.kanade.tachiyomi.extension.zh.copy3000",
-      "apk": "apk/tachiyomi-zh.copy3000-v1.4.3.apk",
-      "lang": "zh",
-      "code": 3,
-      "version": "1.4.3",
-      "nsfw": 0,
-      "hasReadme": false,
-      "hasChangelog": false,
-      "source_id": 6696312508930833206,
-      "base_url": "https://www.copy3000.com",
       "extension_lib": "1.5",
       "content_warning": "CONTENT_WARNING_SAFE"
     }

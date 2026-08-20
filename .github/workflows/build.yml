@@ -39,7 +39,7 @@ jobs:
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD || 'guazi123' }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'guazi123' }}
           ALIAS: ${{ secrets.ALIAS || 'guazi' }}
-        run: ./gradlew --no-daemon :src:zh:guazimanhua:assembleRelease :src:zh:copy3000:assembleRelease
+        run: ./gradlew --no-daemon :src:zh:guazimanhua:assembleRelease
 
       - name: Sign APKs
         env:
@@ -51,8 +51,7 @@ jobs:
           KEY_PASS="${KEY_PASSWORD:-guazi123}"
           ALIAS_NAME="${ALIAS:-guazi}"
           APKSIGNER="$ANDROID_HOME/build-tools/36.0.0/apksigner"
-          for APK in src/zh/guazimanhua/build/outputs/apk/release/*.apk \
-                     src/zh/copy3000/build/outputs/apk/release/*.apk; do
+          for APK in src/zh/guazimanhua/build/outputs/apk/release/*.apk; do
             "$APKSIGNER" sign --ks signingkey.jks --ks-pass "pass:$STORE_PASS" \
               --key-pass "pass:$KEY_PASS" --ks-key-alias "$ALIAS_NAME" "$APK"
           done
@@ -63,14 +62,10 @@ jobs:
           python -m pip install --quiet grpcio grpcio-tools
           mkdir -p apk
           GUIZ=$(ls source/src/zh/guazimanhua/build/outputs/apk/release/*.apk | xargs -n1 basename)
-          CPY=$(ls source/src/zh/copy3000/build/outputs/apk/release/*.apk | xargs -n1 basename)
           cp "source/src/zh/guazimanhua/build/outputs/apk/release/$GUIZ" "apk/$GUIZ"
-          cp "source/src/zh/copy3000/build/outputs/apk/release/$CPY" "apk/$CPY"
           python tools/build_index.py --store \
             --source-info source/src/zh/guazimanhua/build/keiyoushi-source-info.json \
-            --source-info source/src/zh/copy3000/build/keiyoushi-source-info.json \
-            --apk "apk/$GUIZ" \
-            --apk "apk/$CPY"
+            --apk "apk/$GUIZ"
 
       - name: Commit updated dist
         working-directory: .
